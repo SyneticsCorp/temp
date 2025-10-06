@@ -1,0 +1,577 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.autosar</groupId>
+    <version>25.1.17</version>
+    <relativePath>../../builds/io.autosar.designer</relativePath>
+    <artifactId>designer</artifactId>
+  </parent>
+
+  <groupId>io.autosar</groupId>
+  <artifactId>io.autosar.designer.gef</artifactId>
+  <packaging>eclipse-test-plugin</packaging>
+
+  <build>
+    <plugins>
+      <!-- Tycho Target Platform Configuration -->
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <version>1.7.0</version>
+        <configuration>
+          <target>
+            <artifact>
+              <groupId>io.autosar</groupId>
+              <artifactId>io.autosar.target</artifactId>
+              <version>25.1.17</version>
+            </artifact>
+          </target>
+          <environments>
+            <environment>
+              <os>win32</os>
+              <ws>win32</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>linux</os>
+              <ws>gtk</ws>
+              <arch>x86_64</arch>
+            </environment>
+          </environments>
+        </configuration>
+      </plugin>
+
+      <!-- Activator 교체용 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>copy-manifest</id>
+            <phase>initialize</phase>
+            <configuration>
+              <target>
+                <copy file="${project.basedir}/META-INF/MANIFEST.MF.${env}"
+                      tofile="${project.basedir}/META-INF/MANIFEST.MF"
+                      overwrite="true"/>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Java 디버깅 컴파일 설정 -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.10.1</version>
+        <configuration>
+          <debug>true</debug>
+          <debuglevel>lines,vars,source</debuglevel>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+
+      <!-- JaCoCo Agent 준비 (Tycho Surefire와 통합) -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.11</version>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <configuration>
+              <excludes>
+                <!-- SonarQube 기반 제외 -->
+                <!-- Creates -->
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ecu/ModelEcuInstance*</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/connector/RunnableNodeConnection*</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/RootSystemNode*</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/machine/tabletree/moduleinstantiation/nonos/logandtrace/**</exclude>
+
+                <!-- Dialog -->
+                <exclude>**/io/autosar/designer/gef/dialog/**/form/**/FormCommController*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/TabEcuDesign*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/RTEEventDialogManager*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/TabAtomicDesign*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/AtomicSwCDialogUtils*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/ConnectUtils*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/DataMappingUtil*</exclude>
+
+                <!-- Node -->
+                <exclude>**/io/autosar/designer/gef/node/policy/creates/AttachNodeModelFactory*</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/creates/NodeModelFactory*</exclude>
+
+                <!-- Utils -->
+                <exclude>**/io/autosar/designer/gef/utils/AutosarValueConfigurator*</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/fxcanvas/CustomTransfer*</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/fxcanvas/FXCanvas*</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/fxcanvas/ReparentSupport*</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/IoUserInputHandler*</exclude>
+
+                <!-- 추가 제외 -->
+                <exclude>**/io/autosar/designer/gef/utils/AutosarValueConfigurator*</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/icon/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/creates/**</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/fxcanvas/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/handle/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/swcomponent/atomic/internalbehavior/rteevent/namegenerator/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/connect/utils/**</exclude>
+
+                <!-- 추가 제외 20250915 -->
+                <!-- creates 패키지 -->
+                <exclude>**/io/autosar/designer/gef/creates/common/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/connection/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ecu/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ecucommportinstance/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ethtcpipicmpprops/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ethtcpipprops/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/utils/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/machine/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/connector/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/nullisproxy/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/swcprototype/**</exclude>
+
+                <!-- dialog 패키지 -->
+                <exclude>**/io/autosar/designer/gef/dialog/attach/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/connect/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/detach/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/layout/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/VFBEditorWarningDialog*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/PropertiesDialogMatcher*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/fibex4/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/swcomponent/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/util/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/datamapping/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/form/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/interfacemappingset/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/DialogPortPrototype*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/utils/FindPortInterfaceForAdaptive*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/utils/FindPortInterfaceForAtomic*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/utils/FindPortInterfaceForComposition*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/utils/PropertiesUtils*</exclude>
+
+                <!-- editor 패키지 -->
+                <exclude>**/io/autosar/designer/gef/editor/**</exclude>
+
+                <!-- handler 패키지 -->
+                <exclude>**/io/autosar/designer/gef/handler/**</exclude>
+
+                <!-- node 패키지 -->
+                <exclude>**/io/autosar/designer/gef/node/handle/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/model/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/module/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/operations/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/parts/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/creates/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/menuitem/atomic/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/menuitem/adaptive/AdaptiveSwComponentDialogTabContextMenu*</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/menuitem/ecu/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/NodeContextMenuUtils*</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/menuitem/EmptySpaceAddMenuItem*</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/menuitem/EmptySpaceAttachMenu*</exclude>
+                <exclude>**/io/autosar/designer/gef/node/visuals/**</exclude>
+
+                <!-- utils 패키지 -->
+                <exclude>**/io/autosar/designer/gef/utils/**</exclude>
+
+                <!-- viewer 패키지 -->
+                <exclude>**/io/autosar/designer/gef/viewer/**</exclude>
+
+                <!-- 임의 제거 -->
+                <exclude>**/io/autosar/designer/gef/dialog/connect/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/transformation/endtoend/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ethtcpipprops/tcpprops/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/machine/tabletree/moduleinstantiation/nonos/doip/networkinterface/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/menuitem/atomic/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/swcomponent/adaptiveapplication/portmapping/diagnostic/generic/form/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/modeaccesspoint/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/swcomponent/adaptiveapplication/portmapping/rawdatastream/form/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/swcomponent/adaptiveapplication/portmapping/diagnostic/servicedataidentifier/form/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/adaptiveapplication/portmapping/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/externaltriggeringpoint/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/swcomponent/adaptiveapplication/portmapping/timesync/form/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ecu/tabletree/baseproperty/doipconfig/doipinterface/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/datasendpoint/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/datareceivepointbyargument/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/nonqueued/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/datawriteaccess/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/datamapping/senderreceivertosignalgroup/typemapping/array/elementmapping/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/rteevent/swcmodeswitch/tabletree/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/datamapping/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/client/cell/**</exclude>
+
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/receiver/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/server/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/queued/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/sender/queued/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/modeswitchsender/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/queued/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/sender/nonqueued/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/modeswitchreceiver/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/client/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/server/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/queued/transmission/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/sender/tarnsmissionprops/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/sender/queued/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/modeswitchsender/**</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+
+          <!-- 리포트 생성 단계에서도 동일하게 제외 -->
+          <execution>
+            <id>report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <excludes>
+                <!-- 위와 동일 목록 -->
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ecu/ModelEcuInstance*</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/connector/RunnableNodeConnection*</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/RootSystemNode*</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/machine/tabletree/moduleinstantiation/nonos/logandtrace/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/form/**/FormCommController*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/TabEcuDesign*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/RTEEventDialogManager*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/TabAtomicDesign*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/AtomicSwCDialogUtils*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/ConnectUtils*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/**/DataMappingUtil*</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/creates/AttachNodeModelFactory*</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/creates/NodeModelFactory*</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/AutosarValueConfigurator*</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/fxcanvas/CustomTransfer*</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/fxcanvas/FXCanvas*</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/fxcanvas/ReparentSupport*</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/IoUserInputHandler*</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/AutosarValueConfigurator*</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/icon/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/creates/**</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/fxcanvas/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/handle/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/swcomponent/atomic/internalbehavior/rteevent/namegenerator/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/connect/utils/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/common/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/connection/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ecu/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ecucommportinstance/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ethtcpipicmpprops/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ethtcpipprops/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/utils/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/machine/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/connector/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/nullisproxy/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/swcprototype/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/attach/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/connect/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/detach/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/layout/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/VFBEditorWarningDialog*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/PropertiesDialogMatcher*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/fibex4/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/swcomponent/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/util/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/datamapping/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/form/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/interfacemappingset/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/DialogPortPrototype*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/utils/FindPortInterfaceForAdaptive*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/utils/FindPortInterfaceForAtomic*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/utils/FindPortInterfaceForComposition*</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/utils/PropertiesUtils*</exclude>
+                <exclude>**/io/autosar/designer/gef/editor/**</exclude>
+                <exclude>**/io/autosar/designer/gef/handler/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/handle/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/model/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/module/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/operations/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/parts/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/creates/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/menuitem/atomic/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/menuitem/adaptive/AdaptiveSwComponentDialogTabContextMenu*</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/menuitem/ecu/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/NodeContextMenuUtils*</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/menuitem/EmptySpaceAddMenuItem*</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/menuitem/EmptySpaceAttachMenu*</exclude>
+                <exclude>**/io/autosar/designer/gef/node/visuals/**</exclude>
+                <exclude>**/io/autosar/designer/gef/utils/**</exclude>
+                <exclude>**/io/autosar/designer/gef/viewer/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/connect/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/transformation/endtoend/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ethtcpipprops/tcpprops/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/machine/tabletree/moduleinstantiation/nonos/doip/networkinterface/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/node/policy/menuitem/atomic/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/swcomponent/adaptiveapplication/portmapping/diagnostic/generic/form/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/modeaccesspoint/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/swcomponent/adaptiveapplication/portmapping/rawdatastream/form/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/swcomponent/adaptiveapplication/portmapping/diagnostic/servicedataidentifier/form/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/adaptiveapplication/portmapping/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/externaltriggeringpoint/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/swcomponent/adaptiveapplication/portmapping/timesync/form/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/fibex4/ecu/tabletree/baseproperty/doipconfig/doipinterface/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/datasendpoint/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/datareceivepointbyargument/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/nonqueued/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/datawriteaccess/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/datamapping/senderreceivertosignalgroup/typemapping/array/elementmapping/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/rteevent/swcmodeswitch/tabletree/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/dialog/properties/port/datamapping/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/client/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/receiver/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/server/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/queued/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/sender/queued/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/modeswitchsender/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/queued/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/sender/nonqueued/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/modeswitchreceiver/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/client/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/server/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/queued/transmission/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/sender/tarnsmissionprops/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/sender/queued/cell/**</exclude>
+                <exclude>**/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/modeswitchsender/**</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Tycho 테스트 실행용 (JaCoCo와 통합) -->
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-surefire-plugin</artifactId>
+        <version>1.7.0</version>
+        <configuration>
+          <includes>
+            <include>**/*Test.java</include>
+            <include>**/*Tests.java</include>
+            <include>**/*IT.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/*IntegrationTest.java</exclude>
+          </excludes>
+          <useSystemClassLoader>false</useSystemClassLoader>
+          <argLine>-Xmx1024m ${jacocoArgLine}</argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <properties>
+        <env>dev</env>
+      </properties>
+      <build>
+        <plugins>
+          <!-- JaCoCo 커버리지 측정 - dev 프로필에서만 활성화 -->
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.13</version>
+            <executions>
+              <execution>
+                <id>prepare-agent</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+                <configuration>
+                  <propertyName>jacocoArgLine</propertyName>
+                  <destFile>${project.build.directory}/jacoco.exec</destFile>
+                </configuration>
+              </execution>
+              <execution>
+                <id>report</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+                <configuration>
+                  <formats>
+                    <format>HTML</format>
+                    <format>XML</format>
+                  </formats>
+                  <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>release</id>
+      <properties>
+        <env>release</env>
+      </properties>
+      <build>
+        <plugins>
+          <!-- Release 프로필에서는 eclipse-plugin으로 변경 -->
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-packaging-plugin</artifactId>
+            <version>1.7.0</version>
+            <configuration>
+              <packagingType>eclipse-plugin</packagingType>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <!-- SonarQube 설정 -->
+  <properties>
+    <!-- 존재하는 경로만 소스로 지정 -->
+    <sonar.sources>src/main/java</sonar.sources>
+    <sonar.tests>src/test/java</sonar.tests>
+    <sonar.test.inclusions>**/*Test.java,**/*Tests.java,**/*IT.java</sonar.test.inclusions>
+
+    <!-- Tycho(test plugin)의 바이너리는 메인/테스트 모두 target/classes -->
+    <sonar.java.binaries>${project.build.outputDirectory}</sonar.java.binaries>
+    <sonar.java.test.binaries>${project.build.outputDirectory}</sonar.java.test.binaries>
+
+    <!-- JaCoCo XML 리포트 경로 -->
+    <sonar.coverage.jacoco.xmlReportPaths>
+      ${project.reporting.outputDirectory}/jacoco/jacoco.xml
+    </sonar.coverage.jacoco.xmlReportPaths>
+
+    <!-- Sonar 정적분석/커버리지 제외(= JaCoCo exclude와 동일) -->
+    <sonar.exclusions>
+      **/io/autosar/designer/gef/creates/fibex4/ecu/ModelEcuInstance*,
+      **/io/autosar/designer/gef/creates/swcomponent/connector/RunnableNodeConnection*,
+      **/io/autosar/designer/gef/creates/RootSystemNode*,
+      **/io/autosar/designer/gef/creates/machine/tabletree/moduleinstantiation/nonos/logandtrace/**,
+      **/io/autosar/designer/gef/dialog/**/form/**/FormCommController*,
+      **/io/autosar/designer/gef/dialog/**/TabEcuDesign*,
+      **/io/autosar/designer/gef/dialog/**/RTEEventDialogManager*,
+      **/io/autosar/designer/gef/dialog/**/TabAtomicDesign*,
+      **/io/autosar/designer/gef/dialog/**/AtomicSwCDialogUtils*,
+      **/io/autosar/designer/gef/dialog/**/ConnectUtils*,
+      **/io/autosar/designer/gef/dialog/**/DataMappingUtil*,
+      **/io/autosar/designer/gef/node/policy/creates/AttachNodeModelFactory*,
+      **/io/autosar/designer/gef/node/policy/creates/NodeModelFactory*,
+      **/io/autosar/designer/gef/utils/AutosarValueConfigurator*,
+      **/io/autosar/designer/gef/utils/fxcanvas/CustomTransfer*,
+      **/io/autosar/designer/gef/utils/fxcanvas/FXCanvas*,
+      **/io/autosar/designer/gef/utils/fxcanvas/ReparentSupport*,
+      **/io/autosar/designer/gef/utils/IoUserInputHandler*,
+      **/io/autosar/designer/gef/utils/AutosarValueConfigurator*,
+      **/io/autosar/designer/gef/utils/icon/**,
+      **/io/autosar/designer/gef/node/policy/creates/**,
+      **/io/autosar/designer/gef/utils/fxcanvas/**,
+      **/io/autosar/designer/gef/node/handle/**,
+      **/io/autosar/designer/gef/dialog/properties/swcomponent/atomic/internalbehavior/rteevent/namegenerator/**,
+      **/io/autosar/designer/gef/dialog/connect/utils/**,
+      **/io/autosar/designer/gef/creates/common/**,
+      **/io/autosar/designer/gef/creates/fibex4/connection/**,
+      **/io/autosar/designer/gef/creates/fibex4/ecu/**,
+      **/io/autosar/designer/gef/creates/fibex4/ecucommportinstance/**,
+      **/io/autosar/designer/gef/creates/fibex4/ethtcpipicmpprops/**,
+      **/io/autosar/designer/gef/creates/fibex4/ethtcpipprops/**,
+      **/io/autosar/designer/gef/creates/fibex4/utils/**,
+      **/io/autosar/designer/gef/creates/machine/**,
+      **/io/autosar/designer/gef/creates/swcomponent/atomic/**,
+      **/io/autosar/designer/gef/creates/swcomponent/connector/**,
+      **/io/autosar/designer/gef/creates/swcomponent/nullisproxy/**,
+      **/io/autosar/designer/gef/creates/swcomponent/swcprototype/**,
+      **/io/autosar/designer/gef/dialog/attach/**,
+      **/io/autosar/designer/gef/dialog/connect/**,
+      **/io/autosar/designer/gef/dialog/detach/**,
+      **/io/autosar/designer/gef/dialog/layout/**,
+      **/io/autosar/designer/gef/dialog/VFBEditorWarningDialog*,
+      **/io/autosar/designer/gef/dialog/properties/PropertiesDialogMatcher*,
+      **/io/autosar/designer/gef/dialog/properties/fibex4/**,
+      **/io/autosar/designer/gef/dialog/properties/swcomponent/**,
+      **/io/autosar/designer/gef/dialog/properties/util/**,
+      **/io/autosar/designer/gef/dialog/properties/port/datamapping/**,
+      **/io/autosar/designer/gef/dialog/properties/port/form/**,
+      **/io/autosar/designer/gef/dialog/properties/port/interfacemappingset/**,
+      **/io/autosar/designer/gef/dialog/properties/port/DialogPortPrototype*,
+      **/io/autosar/designer/gef/dialog/properties/port/utils/FindPortInterfaceForAdaptive*,
+      **/io/autosar/designer/gef/dialog/properties/port/utils/FindPortInterfaceForAtomic*,
+      **/io/autosar/designer/gef/dialog/properties/port/utils/FindPortInterfaceForComposition*,
+      **/io/autosar/designer/gef/dialog/properties/port/utils/PropertiesUtils*,
+      **/io/autosar/designer/gef/editor/**,
+      **/io/autosar/designer/gef/handler/**,
+      **/io/autosar/designer/gef/node/handle/**,
+      **/io/autosar/designer/gef/node/model/**,
+      **/io/autosar/designer/gef/node/module/**,
+      **/io/autosar/designer/gef/node/operations/**,
+      **/io/autosar/designer/gef/node/parts/**,
+      **/io/autosar/designer/gef/node/policy/creates/**,
+      **/io/autosar/designer/gef/node/policy/menuitem/atomic/**,
+      **/io/autosar/designer/gef/node/policy/menuitem/adaptive/AdaptiveSwComponentDialogTabContextMenu*,
+      **/io/autosar/designer/gef/node/policy/menuitem/ecu/**,
+      **/io/autosar/designer/gef/node/policy/NodeContextMenuUtils*,
+      **/io/autosar/designer/gef/node/policy/menuitem/EmptySpaceAddMenuItem*,
+      **/io/autosar/designer/gef/node/policy/menuitem/EmptySpaceAttachMenu*,
+      **/io/autosar/designer/gef/node/visuals/**,
+      **/io/autosar/designer/gef/utils/**,
+      **/io/autosar/designer/gef/viewer/**,
+      **/io/autosar/designer/gef/dialog/connect/**,
+      **/io/autosar/designer/gef/node/policy/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/transformation/endtoend/cell/**,
+      **/io/autosar/designer/gef/creates/fibex4/ethtcpipprops/tcpprops/cell/**,
+      **/io/autosar/designer/gef/creates/machine/tabletree/moduleinstantiation/nonos/doip/networkinterface/cell/**,
+      **/io/autosar/designer/gef/node/policy/menuitem/atomic/**,
+      **/io/autosar/designer/gef/dialog/properties/swcomponent/adaptiveapplication/portmapping/diagnostic/generic/form/**,
+      **/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/modeaccesspoint/cell/**,
+      **/io/autosar/designer/gef/dialog/properties/swcomponent/adaptiveapplication/portmapping/rawdatastream/form/**,
+      **/io/autosar/designer/gef/dialog/properties/swcomponent/adaptiveapplication/portmapping/diagnostic/servicedataidentifier/form/**,
+      **/io/autosar/designer/gef/creates/swcomponent/adaptiveapplication/portmapping/**,
+      **/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/externaltriggeringpoint/cell/**,
+      **/io/autosar/designer/gef/dialog/properties/swcomponent/adaptiveapplication/portmapping/timesync/form/**,
+      **/io/autosar/designer/gef/creates/fibex4/ecu/tabletree/baseproperty/doipconfig/doipinterface/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/datasendpoint/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/datareceivepointbyargument/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/nonqueued/**,
+      **/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/runnable/tabletree/datawriteaccess/cell/**,
+      **/io/autosar/designer/gef/dialog/properties/port/datamapping/senderreceivertosignalgroup/typemapping/array/elementmapping/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/atomic/internalbehavior/rteevent/swcmodeswitch/tabletree/cell/**,
+      **/io/autosar/designer/gef/dialog/properties/port/datamapping/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/client/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/receiver/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/server/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/queued/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/sender/queued/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/modeswitchsender/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/queued/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/sender/nonqueued/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/modeswitchreceiver/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/rportcomspec/client/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/server/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/queued/transmission/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/sender/tarnsmissionprops/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/sender/queued/cell/**,
+      **/io/autosar/designer/gef/creates/swcomponent/port/tabletree/pportcomspec/modeswitchsender/**
+    </sonar.exclusions>
+    <sonar.coverage.exclusions>${sonar.exclusions}</sonar.coverage.exclusions>
+  </properties>
+
+</project>
