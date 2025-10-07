@@ -375,7 +375,7 @@
             <exclude>**/*ModelMachineDesignTest.java</exclude>-->
           </excludes>
           <useSystemClassLoader>false</useSystemClassLoader>
-          <argLine>-Xmx1024m ${jacocoArgLine}</argLine>
+          <argLine>-Xmx4096m ${jacocoArgLine}</argLine>
         </configuration>
       </plugin>
     </plugins>
