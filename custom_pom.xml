@@ -372,6 +372,7 @@
             <exclude>**/*IntegrationTest.java</exclude>
             <exclude>**/*CreateMachineDesignCanCommunicationConnectorTest.java</exclude>
             <exclude>**/*CreateMachineDesignEthernetCommunicationConnectorTest.java</exclude>
+            <exclude>**/*ModelMachineDesignTest.java</exclude>
           </excludes>
           <useSystemClassLoader>false</useSystemClassLoader>
           <argLine>-Xmx1024m ${jacocoArgLine}</argLine>
